@@ -1,0 +1,160 @@
+{
+  "name": "Giá xăng hằng ngày",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 16
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "99d732e3-825e-4861-a94e-fd58b3776843",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://webgia.com/gia-xang-dau/petrolimex/",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "413f5b8d-ce5b-4e6b-aec5-fbeb099f7919",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "extractionValues": {
+          "values": [
+            {
+              "key": "ten_loai",
+              "cssSelector": ".table-radius tbody tr th",
+              "returnArray": true
+            },
+            {
+              "key": "gia_vung_1",
+              "cssSelector": ".table-radius tbody tr td:nth-child(2)",
+              "returnArray": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        416,
+        0
+      ],
+      "id": "ccbfe5a0-dfe2-4a0c-ac23-d1ba6b45c5c5",
+      "name": "HTML"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Lấy dữ liệu từ node HTML trước đó\nconst input = $json;\nconst results = [];\n\n// Đảm bảo dữ liệu tồn tại và là mảng\nconst ten_loai = input.ten_loai || [];\nconst gia_vung_1 = input.gia_vung_1 || [];\n\n// Chúng ta chạy vòng lặp theo số lượng tên loại xăng dầu (thường có 6 loại chính)\nfor (let i = 0; i < ten_loai.length; i++) {\n  \n  // Chỉ lấy nếu có giá tương ứng (để tránh lỗi undefined)\n  if (ten_loai[i] && gia_vung_1[i]) {\n    \n    // Làm sạch tên: Xóa phần URL [https://...] trong chuỗi\n    let cleanName = ten_loai[i].split('[')[0].trim();\n    \n    // Chỉ lấy các loại xăng dầu thực sự (loại bỏ các mã ngoại tệ nếu nó bị dính vào)\n    if (cleanName !== \"USD\" && cleanName !== \"EUR\" && cleanName !== \"GBP\" && !cleanName.includes(\"Đơn vị\")) {\n      results.push({\n        ten: cleanName,\n        gia: gia_vung_1[i].trim()\n      });\n    }\n  }\n}\n\n// Tìm riêng xăng RON 95-III để báo cáo nhanh\nconst ron95 = results.find(item => item.ten.includes('RON 95-III'));\n\n// Trả về kết quả: Nếu tìm thấy RON 95 thì trả về nó, không thì trả về cả bảng đã sạch\nreturn ron95 ? ron95 : results;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        624,
+        0
+      ],
+      "id": "4a7983fd-f381-4764-934e-1b43397378f0",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "authentication": "webhook",
+        "content": "=⛽ **CẬP NHẬT GIÁ XĂNG DẦU BẰNG BOT NAMLE**\n-----------------------------\n> **Loại xăng:** {{ $json.ten }}\n> **Giá niêm yết:** {{ $json.gia }} VNĐ/lít\n*(Dữ liệu cập nhật tự động)*",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.discord",
+      "typeVersion": 2,
+      "position": [
+        832,
+        0
+      ],
+      "id": "f52e9f99-dfdd-4c88-b606-c75e0933b3be",
+      "name": "Discord",
+      "webhookId": "763a86e0-e400-4474-9545-c394309d4c2e",
+      "credentials": {
+        "discordWebhookApi": {
+          "id": "fROISLBkwmQgf5mw",
+          "name": "Discord Bot account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTML": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Discord",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "72c7bd79-a048-4148-85db-88749cc80720",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "58d0cef78510420a5affad50f856a4090e859d3774b6a11a1e7ced62c8bff0cb"
+  },
+  "id": "B715iM2NWwlAROFA",
+  "tags": []
+}
