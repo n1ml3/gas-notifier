@@ -13,10 +13,7 @@
       },
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.3,
-      "position": [
-        0,
-        0
-      ],
+      "position": [0, 0],
       "id": "77abf0f1-e6ad-4d44-8ded-6a61a0f79746",
       "name": "Schedule Trigger"
     },
@@ -27,10 +24,7 @@
       },
       "type": "n8n-nodes-base.rssFeedRead",
       "typeVersion": 1.2,
-      "position": [
-        208,
-        0
-      ],
+      "position": [208, 0],
       "id": "77391e9e-3603-4bec-adf4-11d89b559fd3",
       "name": "RSS Read"
     },
@@ -40,10 +34,7 @@
       },
       "type": "n8n-nodes-base.limit",
       "typeVersion": 1,
-      "position": [
-        416,
-        0
-      ],
+      "position": [416, 0],
       "id": "cf5509ab-ff5b-47f5-9f9f-9dce198990ed",
       "name": "Limit"
     },
@@ -54,10 +45,7 @@
       },
       "type": "n8n-nodes-base.aggregate",
       "typeVersion": 1,
-      "position": [
-        624,
-        0
-      ],
+      "position": [624, 0],
       "id": "5b04b16a-ff08-4129-8c1a-e66003959c4b",
       "name": "Aggregate"
     },
@@ -81,10 +69,7 @@
       },
       "type": "@n8n/n8n-nodes-langchain.googleGemini",
       "typeVersion": 1.1,
-      "position": [
-        832,
-        0
-      ],
+      "position": [832, 0],
       "id": "414d857c-647a-430b-a808-328bdffbce70",
       "name": "Message a model",
       "credentials": {
@@ -110,10 +95,7 @@
       },
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
-      "position": [
-        1184,
-        0
-      ],
+      "position": [1184, 0],
       "id": "3cb7d4c2-9032-4dd2-9dfe-67f52e60332a",
       "name": "Edit Fields"
     }
